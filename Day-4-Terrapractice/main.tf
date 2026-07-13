@@ -5,10 +5,3 @@ resource "aws_instance" "my_ec2" {
     Name = "Terra-EC2"
   }
 }
-resource "aws_vpc" "name" {
-  cidr_block = "10.0.0.0/16"
-  tags = {
-    Name = "Terra"
-  }
-
-}
