@@ -72,3 +72,51 @@ resource "aws_instance" "EC2-tera" {
   }
 
 }
+resource "aws_subnet" "sub-2" {
+  vpc_id     = aws_vpc.name.id
+  cidr_block = "10.0.1.0/24"
+  tags = {
+    Name = "nayak"
+  }
+}
+
+resource "aws_eip" "dev_nat" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "dev_nat" {
+  allocation_id = aws_eip.dev_nat.id
+  subnet_id     = aws_subnet.name.id
+  tags = {
+    Name = "Mynat"
+  }
+
+  depends_on = [aws_internet_gateway.dev-igw]
+}
+
+resource "aws_route_table" "dev_route_table2" {
+  vpc_id = aws_vpc.name.id
+  tags = {
+    Name = "RT2"
+  }
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.dev_nat.id
+  }
+}
+resource "aws_route_table_association" "dev_route_table_association2" {
+  subnet_id      = aws_subnet.sub-2.id
+  route_table_id = aws_route_table.dev_route_table2.id
+}
+
+resource "aws_instance" "EC2-tera2" {
+  ami           = "ami-01edba92f9036f76e"
+  instance_type = "t2.micro"
+
+  subnet_id              = aws_subnet.sub-2.id
+  vpc_security_group_ids = [aws_security_group.dev_SG.id]
+  tags = {
+    Name = "Ec2-pop"
+  }
+
+}
