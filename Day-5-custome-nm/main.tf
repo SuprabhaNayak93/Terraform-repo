@@ -120,3 +120,14 @@ resource "aws_instance" "EC2-tera2" {
   }
 
 }
+
+resource "aws_vpc" "name2" {
+  cidr_block = "172.16.0.0/16"
+  tags = {
+    Name = "pratu"
+  }
+
+}
+resource "aws_iam_user" "user1" {
+  name = "Roji"
+}
