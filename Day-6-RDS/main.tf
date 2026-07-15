@@ -1,7 +1,5 @@
 resource "aws_vpc" "name" {
   cidr_block = "10.0.0.0/16"
-   enable_dns_support   = true
-  enable_dns_hostnames = true
   tags = {
     Name = "nayak"
   }
@@ -97,6 +95,25 @@ resource "aws_db_instance" "Mysqlrr" {
   skip_final_snapshot     = true
   maintenance_window      = "Mon:00:00-Mon:03:00"
   backup_retention_period = 7
+}
+
+resource "aws_elasticache_serverless_cache" "redis" {
+  engine      = "redis"
+  name        = "mydbrojinayak"
+  description = "Redis Serverless Cache"
+
+  subnet_ids = [
+    aws_subnet.sub1.id,
+    aws_subnet.sub2.id
+  ]
+
+  security_group_ids = [
+    aws_security_group.SG.id
+  ]
+
+  tags = {
+    Name = "Redis-Serverless"
+  }
 }
 
 
