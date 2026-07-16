@@ -1,5 +1,8 @@
 resource "aws_vpc" "name" {
   cidr_block = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
   tags = {
     Name = "nayak"
   }
@@ -8,7 +11,7 @@ resource "aws_vpc" "name" {
 resource "aws_subnet" "sub1" {
   vpc_id            = aws_vpc.name.id
   cidr_block        = "10.0.0.0/24"
-  availability_zone = "us-west-2a"
+  availability_zone = "us-east-1a"
   tags = {
     Name = "roji"
   }
@@ -17,7 +20,7 @@ resource "aws_subnet" "sub1" {
 resource "aws_subnet" "sub2" {
   vpc_id            = aws_vpc.name.id
   cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-west-2b"
+  availability_zone = "us-east-1b"
   tags = {
     Name = "roop"
   }
@@ -61,6 +64,12 @@ resource "aws_security_group" "SG" {
   ingress {
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -116,4 +125,22 @@ resource "aws_elasticache_serverless_cache" "redis" {
   }
 }
 
+resource "aws_db_instance" "mysql_read_replica" {
+  identifier = "mydbrojinayak-replica"
 
+  replicate_source_db = aws_db_instance.Mysqlrr.identifier
+
+  instance_class = "db.t3.micro"
+
+  publicly_accessible = true
+
+  skip_final_snapshot = true
+
+  depends_on = [
+    aws_db_instance.Mysqlrr
+  ]
+
+  tags = {
+    Name = "mysql-read-replica"
+  }
+}
