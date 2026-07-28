@@ -93,6 +93,7 @@ resource "aws_nat_gateway" "dev_nat" {
 
   depends_on = [aws_internet_gateway.dev-igw]
 }
+#availability_mode = "regional"
 
 resource "aws_route_table" "dev_route_table2" {
   vpc_id = aws_vpc.name.id
